@@ -3,5 +3,8 @@
   "dest": "../../dist/utils",
   "lib": {
     "entryFile": "src/public-api.ts"
-  }
+  }, 
+  "whitelistedNonPeerDependencies": [
+    "socket.io"
+  ]
 }

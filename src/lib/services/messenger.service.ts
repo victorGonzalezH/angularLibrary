@@ -5,7 +5,7 @@
 
   Resumen:
     Servicio que permite y administra los mensajes entre componentes o cualquier objeto que
-    inyecte ese servicio. Este servicio es util para mandar y recibir mensajes desde componentes
+    inyecte este servicio. Este servicio es util para mandar y recibir mensajes desde componentes
     (dentro de la misma aplicacion) que no son padre-hijo explicitamente, por ejemplo componentes
     que se resuelven dinamicamente mediante el Router
 */
@@ -16,8 +16,7 @@ import { Subject, Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
-export class MessengerService 
-{
+export class MessengerService {
 
 
   //Propiedades

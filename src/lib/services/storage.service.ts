@@ -13,52 +13,44 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 
-export class StorageService 
-{
+export class StorageService {
 
   static SESSION_STORAGE  = 0;
   static LOCAL_STORAGE    = 1;
-  private localStorage:   any;
+  private localStorage: any;
   private sessionStorage: any;
 
 
-  constructor() 
-  { 
+  constructor() {
 
     this.sessionStorage = sessionStorage; // sessionStorage;
-    this.localStorage = localStorage;     //localStorage
+    this.localStorage = localStorage;     // localStorage
   }
 
 
-  public retrieve(key: string, storageType?: number): any
-  {
+  public retrieve(key: string, storageType?: number): any {
 
     let item = null;
-    if (storageType == null) 
-    {
-      //Primero se trata de buscar el item en la sesion
+    if (storageType == null)  {
+
+      // Primero se trata de buscar el item en la sesion
       item = this.sessionStorage.getItem(key);
 
-      if (item && item !== 'undefined' && item != 'undefined') 
-      {
+      if (item && item !== 'undefined' && item != 'undefined') {
         return JSON.parse(item);
       }
-      
-      //Si el item NO se encuentra en la sesion, entonces se busca localmente
+
+      // Si el item NO se encuentra en la sesion, entonces se busca localmente
       item = this.localStorage.getItem(key);
 
-      if (item && item !== 'undefined' && item != 'undefined')
-      {
+      if (item && item !== 'undefined' && item != 'undefined') {
         return JSON.parse(item);
       }
 
-      //No se encuentra el elemento
+      // No se encuentra el elemento
       return null;
-    }
-    else 
-    {
-      switch (storageType) 
-      {
+    } else {
+      switch (storageType)  {
         case StorageService.SESSION_STORAGE:
           item = this.sessionStorage.getItem(key);
           if (item && item !== 'undefined') {
@@ -81,15 +73,11 @@ export class StorageService
   }
 
 
-  public store(key: string, value: any, storageType?: StorageType)
-  {
+  public store(key: string, value: any, storageType?: StorageType) {
     if (storageType == null) {
       this.sessionStorage.setItem(key, JSON.stringify(value));
-    }
-    else
-    {
-      switch (storageType)
-      {
+    } else {
+      switch (storageType) {
         case StorageService.SESSION_STORAGE: this.sessionStorage.setItem(key, JSON.stringify(value)); break;
         case StorageService.LOCAL_STORAGE: this.localStorage.setItem(key, JSON.stringify(value)); break;
 

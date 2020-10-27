@@ -4,5 +4,9 @@
   "peerDependencies": {
     "@angular/common": "^8.2.14",
     "@angular/core": "^8.2.14"
+  },
+  "dependencies": {
+    "rxjs": "^6.6.2",
+    "socket.io": "^2.3.0"
   }
 }
