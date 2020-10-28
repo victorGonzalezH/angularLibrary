@@ -7,8 +7,8 @@
 
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
-import { catchError, map, retry } from 'rxjs/operators';
-import { Observable, of, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { of, throwError } from 'rxjs';
 
 export enum DataServiceProtocols {
 
@@ -102,8 +102,7 @@ export class DataService {
           break;
       }
 
-    return this.http.get(completeUrl, { headers,  params: httpParams, responseType: responseTypeLocal})
-    .pipe(catchError(this.handleError));
+    return this.http.get(completeUrl, { headers,  params: httpParams, responseType: responseTypeLocal});
 
 
   } else { // Si no se proporciona un url
@@ -157,7 +156,7 @@ export class DataService {
         }
 
      return this.http.post(completeUrl, body, { headers, responseType: responseTypeLocal })
-     .pipe(catchError(val => of(`I caught: ${val}`)));
+     .pipe(catchError(this.handleError));
 
 } else {
   return of([]);
