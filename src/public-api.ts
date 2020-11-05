@@ -22,3 +22,5 @@ export * from './lib/utils.service';
 export * from './lib/services/realtime.service';
 
 export * from './lib/services/data.service';
+
+export * from './lib/utils.component';

@@ -7,8 +7,9 @@
 
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
+import { Observable, of, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { of, throwError } from 'rxjs';
+import { ApiResultBase, ErrorType } from '../models/api-result-base.model';
 
 export enum DataServiceProtocols {
 
@@ -38,6 +39,23 @@ export class DataService {
 
   }
 
+  /**
+   * 
+   * @param url url original
+   */
+  public getUrlWithProtocol(url: string, protocol: DataServiceProtocols): string {
+    let completeUrl = url;
+    // Si la url no empieza con http o no empieza con https se concatena el protocolo que se haya pasado como
+    // parametro
+    if (!url.startsWith('http') || url.startsWith('https')) {
+
+      if (protocol !== DataServiceProtocols.NONE) {
+        completeUrl = protocol + '://' + url;
+      }
+
+    }
+    return completeUrl;
+  }
 
   public get(url: string, params?: Array<{ name: string, value: any }>, method?: string, protocol: DataServiceProtocols = DataServiceProtocols.HTTP, responseType: ResponseTypes  = ResponseTypes.JSON, token: string = null) {
 
@@ -52,16 +70,7 @@ export class DataService {
       headers.set('Authorization', token);
     }
 
-    let completeUrl = url;
-    // Si la url no empieza con http o no empieza con https se concatena el protocolo que se haya pasado como
-    // parametro
-    if (!url.startsWith('http') || url.startsWith('https')) {
-
-      if (protocol !== DataServiceProtocols.NONE) {
-        completeUrl = protocol + '://' + url;
-      }
-
-    }
+    let completeUrl = this.getUrlWithProtocol(url, protocol);
 
     // Si se especifica un metodo en particular se anexa a la url
     if (method) {
@@ -102,17 +111,19 @@ export class DataService {
           break;
       }
 
-    return this.http.get(completeUrl, { headers,  params: httpParams, responseType: responseTypeLocal});
-
+    return this.http.get(completeUrl, { headers,  params: httpParams, responseType: responseTypeLocal})
+    .pipe(catchError(this.handleError));
 
   } else { // Si no se proporciona un url
-      return of([]);
+    const error: Error = { message : 'No url defined', name: 'No url defined' };
+    const apiResult: ApiResultBase = { data: null, error, errorType: ErrorType.ClientSide, resultCode: -1, userMessage: '', applicationMessage: error.message };
+    return throwError(apiResult);
     }
   }
 
 
 
-  public post(url: string, body: any, method: string, protocol: DataServiceProtocols = DataServiceProtocols.HTTP, responseType: ResponseTypes  = ResponseTypes.JSON, token: string = null) {
+  public post(url: string, body: any, method: string, protocol: DataServiceProtocols = DataServiceProtocols.HTTP, responseType: ResponseTypes  = ResponseTypes.JSON, token: string = null): Observable<any> {
 
   if (url) {
      // Se declaran los encabezados
@@ -123,16 +134,7 @@ export class DataService {
        headers.set('Authorization', token);
      }
 
-     let completeUrl = url;
-    // Si la url no empieza con http o no empieza con https se concatena el protocolo que se haya pasado como
-    // parametro
-     if (!url.startsWith('http') || url.startsWith('https')) {
-
-      if (protocol !== DataServiceProtocols.NONE) {
-        completeUrl = protocol + '://' + url;
-      }
-
-    }
+     let completeUrl = this.getUrlWithProtocol(url, protocol);
 
     // Si se especifica un metodo en particular se anexa a la url
      if (method) {
@@ -159,7 +161,9 @@ export class DataService {
      .pipe(catchError(this.handleError));
 
 } else {
-  return of([]);
+  const error: Error = { message : 'No url defined', name: 'No url defined' };
+  const apiResult: ApiResultBase = { data: null, error, errorType: ErrorType.ClientSide, resultCode: -1, userMessage: '', applicationMessage: error.message };
+  return throwError(apiResult);
 }
 
   }
@@ -167,16 +171,18 @@ export class DataService {
 
 
   private handleError(error: HttpErrorResponse) {
+    const apiResult: ApiResultBase = { data: null, error, errorType: ErrorType.Domain, resultCode: error.status, userMessage: '', applicationMessage: error.message  };
     if (error.error instanceof ErrorEvent) {
-      // A client-side or network error occurred. Handle it accordingly.
-      console.error('An error occurred:', error.error.message);
+      apiResult.errorType = ErrorType.ClientSide;
     } else {
-      // The backend returned an unsuccessful response code.
-      // The response body may contain clues as to what went wrong.
-      console.error(`Backend returned code ${error.status}, ` + `body was: ${error.error}`);
+      // Este tipo de error puede pasar por algun mal funcionamiento en el servidor donde se hacen
+      // las llamadas api
+      // Se asigna el tipo de error del lado del servidor
+      apiResult.errorType = ErrorType.ServerSide;
+
     }
     // Return an observable with a user-facing error message.
-    return throwError('Something bad happened; please try again later.');
+    return throwError(apiResult);
   }
 
 

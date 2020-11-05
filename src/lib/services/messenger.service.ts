@@ -19,7 +19,7 @@ import { Subject, Observable } from 'rxjs';
 export class MessengerService {
 
 
-  //Propiedades
+  // Propiedades
   private messagesSource: Subject<string> = new Subject();
 
   private messenger = this.messagesSource.asObservable();
