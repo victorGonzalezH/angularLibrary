@@ -5,9 +5,9 @@
  * recibir mensajes en tiempo real desde/hacia un servidor socket.io server.
  */
 import { Injectable } from '@angular/core';
-import io from 'socket.io-client';
-import { from, Observable, Subject } from 'rxjs';
-import { resolve } from 'url';
+import  io from 'socket.io-client';
+import { Observable, Subject } from 'rxjs';
+
 
 @Injectable({
   providedIn: 'root'
@@ -32,6 +32,7 @@ export class RealtimeService {
 
   private localEmitAcknowledgements: Subject<any>;
 
+  
   /**
    * Observable para los "agradecimiento" o respuestas de vuelta que se generan cuando se envia
    * un mensaje 
@@ -43,21 +44,35 @@ export class RealtimeService {
 
   private socket: any;
 
+
+  /**
+   * Objeto de los observables que se usa para los eventos
+   */
+  private eventsObservables: Record<string, Observable<any>>;
+
+
+
   constructor() {
+    
     this.localIsConnected = false;
     this.localEmitAcknowledgements = new Subject();
+    this.eventsObservables = {};
   }
 
 
-  public connect(url: string) {
+  public connect(url: string): boolean {
+    
     // Verificar con alguna expresion regular que la url es correcta
     this.socket = io(url);
 
     if (this.socket !== undefined || this.socket !== null) {
       this.localIsConnected = true;
     }
+
+    return true;
   }
 
+  
 
   /**
    * Agrega un evento para escuchar los mensajes provenientes de el
@@ -65,19 +80,32 @@ export class RealtimeService {
    */
   public addEvent(event: string): Observable<any> {
 
-    return new Observable(observer => {
-      // Si el socket esta conectado, entonces, agrega el evento
-      if (this.localIsConnected === true) {
-        this.socket.on(event,
-          data => {
-                      observer.next(data);
-                  }
-       );
-      }  else {
-        observer.error(this.noConnectedMessage);
-      }
-   });
+    // Si la propiedad no existe
+    if(this.eventsObservables[event] == undefined) {
+      
+      this.eventsObservables[event] = new Observable(observer => {
+
+        // Si el socket esta conectado, entonces, agrega el evento
+        if (this.localIsConnected === true) {
+          this.socket.on(event,
+            data => {
+                        observer.next(data);
+                    }
+         );
+        }  else {
+
+          observer.error(this.noConnectedMessage);
+
+        }
+     });
+    
+    }
+    
+
+    return this.eventsObservables[event];
+
   }
+
 
   /**
    * Envia un mensaje al servidor. Para recibir las confirmaciones de los datos enviados

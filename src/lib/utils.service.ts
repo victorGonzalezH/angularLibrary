@@ -55,6 +55,19 @@ public static groupBy(list: Array<any>, keyGetter: any) {
 
     return map;
 }
+
+
+/**
+ * 
+ * @param obj 
+ * @param prop 
+ */
+public static hasOwnProperty<X extends {}, Y extends PropertyKey>
+  (obj: X, prop: Y): obj is X & Record<Y, unknown> {
+  return obj.hasOwnProperty(prop)
+}
+
+
 /**
  * 
  * @param authenticationSuccessRoute authentication success route. Route to navigate when a user is successfully authenticated in the authentication guard

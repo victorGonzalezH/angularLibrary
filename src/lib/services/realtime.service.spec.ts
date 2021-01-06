@@ -9,4 +9,12 @@ describe('RealtimeService', () => {
     const service: RealtimeService = TestBed.get(RealtimeService);
     expect(service).toBeTruthy();
   });
+
+  it('should connect', () => {
+    const service: RealtimeService = TestBed.get(RealtimeService);
+
+    expect(service.connect('https://localhost:3000')).toBeTruthy();
+  
+  });
+
 });
