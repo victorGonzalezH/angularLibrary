@@ -2,9 +2,6 @@
  * Public API Surface of utils
  */
 
-
-
-
 export * from './lib/utils.module';
 
 export * from './lib/services/storage.service';
@@ -24,3 +21,7 @@ export * from './lib/services/realtime.service';
 export * from './lib/services/data.service';
 
 export * from './lib/utils.component';
+
+export * from './lib/interceptors/jwt.interceptor';
+
+export * from './lib/interfaces/authentication.interface';
