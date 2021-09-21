@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { IAuthenticationService } from './interfaces/authentication.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -35,6 +36,13 @@ export class UtilsService {
   private authenticationSuccessRouteLocal: string;
 
   private userAuthenticatedKeyLocal: string;
+
+  private authenticationServiceLocal: IAuthenticationService;
+
+  get authenticationService(): IAuthenticationService
+  {
+    return this.authenticationServiceLocal;
+  }
 
 /**
  *  Agrupa los elementos de un arreglo
@@ -73,8 +81,9 @@ public static hasOwnProperty<X extends {}, Y extends PropertyKey>
  * @param authenticationSuccessRoute authentication success route. Route to navigate when a user is successfully authenticated in the authentication guard
  * @param afr authentication failure route. Route to navigate when a user is failed authenticated in the authentication guard
  * @param userAuthenticatedKey user authenticated key. User key to be used in the authentication guard to get the current user in the localStorage
+ * @param authenticationService servicio de autenticacion que se usa para las operaciones de autenticacion en los interceptores
  */
-public configureUtils(authenticationSuccessRoute: string, authenticationFailureRoute: string, userAuthenticatedKey: string): void {
+public configureUtils(authenticationSuccessRoute: string, authenticationFailureRoute: string, userAuthenticatedKey: string, authenticationService: IAuthenticationService): void {
  this.authenticationSuccessRouteLocal = authenticationSuccessRoute;
  this.authenticationFailureRouteLocal = authenticationFailureRoute;
  this.userAuthenticatedKeyLocal = userAuthenticatedKey;
