@@ -87,7 +87,23 @@ export class StorageService {
 
   }
 
-
+  /**
+   * Removes an item
+   * @param key 
+   * @param storageType 
+   */
+  public removeItem(key: string, storageType: StorageType) 
+  {
+    switch (storageType) {
+      case StorageService.SESSION_STORAGE:
+        this.sessionStorage.removeItem(key);
+        break;
+      case StorageService.LOCAL_STORAGE: 
+        this.localStorage.removeItem(key);
+        break;
+      
+    }
+  }
 }
 
 
