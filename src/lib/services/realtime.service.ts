@@ -60,10 +60,33 @@ export class RealtimeService {
   }
 
 
-  public connect(url: string): boolean {
+  /**
+   * 
+   * @param url 
+   * @param bearerToken 
+   */
+  public connect(url: string, bearerToken?: string): boolean {
     
     // Verificar con alguna expresion regular que la url es correcta
-    this.socket = io(url);
+    if(bearerToken != undefined) {
+      const socketOptions = {
+        origins: '*:*',
+        transportOptions: {
+          polling: {
+            extraHeaders: 
+            {
+              'x-clientid': 'Bearer ' + bearerToken,
+            }
+          }
+        }
+     };
+  
+      this.socket = io(url, socketOptions );
+    }
+    else {
+
+      this.socket = io(url);
+    }
 
     if (this.socket !== undefined || this.socket !== null) {
       this.localIsConnected = true;
